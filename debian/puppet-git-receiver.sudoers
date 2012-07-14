@@ -1,1 +1,1 @@
-puppet-git	ALL = NOPASSWD: /usr/bin/puppet
+puppet-git	ALL=NOPASSWD: /usr/bin/puppet
