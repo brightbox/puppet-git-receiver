@@ -1,0 +1,6 @@
+#!/bin/sh
+
+git archive --format=tar HEAD | (cd /etc/puppet && sudo tar xfv -)
+sudo puppet apply /etc/puppet/manifests/init.pp
+
+

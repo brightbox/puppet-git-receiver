@@ -1,0 +1,5 @@
+puppet-git-receiver (1.0) unstable; urgency=low
+
+  * Initial Release.
+
+ -- John Leach <john@brightbox.co.uk>  Sat, 14 Jul 2012 12:02:29 +0100
