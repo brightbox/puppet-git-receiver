@@ -1,2 +1,3 @@
 puppet-git-receiver-update-hook /usr/lib/puppet-git/
 puppet-git-receiver-post-receive-hook /usr/lib/puppet-git/
+debian/puppet-git-receiver.sudoers /etc/sudoers.d/puppet-git-receiver

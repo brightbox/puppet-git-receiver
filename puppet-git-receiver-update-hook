@@ -5,6 +5,9 @@ set -o pipefail
 # git branch to consider for puppet
 BRANCH=master
 
+# extra options passed to puppet agent
+PUPPET_OPTIONS=
+
 MODULEPATH="modules"
 
 # --- Command line
@@ -47,7 +50,7 @@ fi
 echo "*** Applying puppet manifests" >&2
 
 # TODO: find appropriate file to apply
-sudo puppet apply --modulepath=$DEST/$MODULEPATH  $DEST/manifests/site.pp
+sudo puppet apply $PUPPET_OPTIONS --modulepath=$DEST/$MODULEPATH  $DEST/manifests/site.pp |& sed "s,$DEST/,,g"
 PUPRET=$?
 if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
 		echo "*** Encountered a problem applying the puppet manifest, rejecting update" >&2
