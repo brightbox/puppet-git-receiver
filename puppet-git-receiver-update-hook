@@ -1,0 +1,60 @@
+#!/bin/bash
+
+set -o pipefail
+
+# git branch to consider for puppet
+BRANCH=master
+
+MODULEPATH="modules"
+
+# --- Command line
+refname="$1"
+oldrev="$2"
+newrev="$3"
+
+# --- Safety check
+if [ -z "$GIT_DIR" ] ; then
+	echo "Don't run this script from the command line." >&2
+	echo " (if you want, you could supply GIT_DIR then run" >&2
+	echo "  $0 <ref> <oldrev> <newrev>)" >&2
+	exit 1
+fi
+
+if [ -z "$refname" -o -z "$oldrev" -o -z "$newrev" ] ; then
+	echo "Usage: $0 <ref> <oldrev> <newrev>" >&2
+	exit 1
+fi
+
+if [ "$refname" != "refs/heads/$BRANCH" ] ; then
+		exit 0
+fi
+
+echo "*** Validating puppet manifests for $refname" >&2
+DEST=`mktemp -d --suffix=.puppet-git-receiver`
+if ! git archive --format=tar $newrev | (cd $DEST && tar xf -) ; then
+		echo "*** Encountered a problem extracting the incoming git tree $newrev" >&2
+		rm -rf $DEST
+		exit 1
+fi
+
+# FIXME: what if no pp files?
+if ! find $DEST -name "*.pp" | xargs puppet parser validate --mode=user --modulepath=$DEST/$MODULEPATH |& sed "s,$DEST/,,g" ; then
+		echo "*** Encountered a problem validating the puppet manifests" >&2
+		rm -rf $DEST
+		exit 1
+fi
+
+echo "*** Applying puppet manifests" >&2
+
+# TODO: find appropriate file to apply
+sudo puppet apply --modulepath=$DEST/$MODULEPATH  $DEST/manifests/site.pp
+PUPRET=$?
+if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
+		echo "*** Encountered a problem applying the puppet manifest, rejecting update" >&2
+		rm -rf $DEST
+		exit 1
+fi
+
+echo "*** Puppet manifests applied successfully" >&2
+rm -rf $DEST
+exit 0

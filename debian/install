@@ -1,0 +1,2 @@
+puppet-git-receiver-update-hook /usr/lib/puppet-git/
+puppet-git-receiver-post-receive-hook /usr/lib/puppet-git/
