@@ -33,13 +33,13 @@ case "$1" in
 				chmod 750 $PGRHOME
 				chown $PGRUSER.$PGRUSER $PGRHOME
 				mkdir -p $REPOPATH
-				if [ ! -d "$REPOPATH/.git" ] ; then
+				HOOKSPATH=$REPOPATH/hooks/
+				if [ ! -d "$HOOKSPATH" ] ; then
 						GIT_DIR=$REPOPATH git init --bare
 				fi
 				chown -R $PGRUSER.$PGRUSER $REPOPATH
-				HOOKSPATH=$REPOPATH/.git/hooks/
+
 				ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
-				ln -fns /usr/lib/puppet-git/puppet-git-receiver-post-receive-hook $HOOKSPATH/post-receive
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
