@@ -13,7 +13,7 @@ If only considers the master branch, ignoring all other branches. If
 the validation or the apply return any errors, the update is rejected
 (i.e: the master head is not updated).
 
-    $ git push srv-30qvg
+    git push srv-30qvg
     
     Counting objects: 7, done.
     Delta compression using up to 2 threads.
@@ -39,9 +39,9 @@ user named `puppet-git`, with a pre-configured git repository named
 Pre-built packages for Ubuntu precise are available in the
 [Brightbox launchpad ppa](https://launchpad.net/~brightbox/+archive/puppet).
 
-    $ sudo apt-add-repository ppa:brightbox/puppet
-    $ sudo apt-get update
-    $ sudo apt-get install puppet-git-receiver
+    sudo apt-add-repository ppa:brightbox/puppet
+    sudo apt-get update
+    sudo apt-get install puppet-git-receiver
 
 Then set a password for the `puppet-git` user, or add your ssh keys to
 it's home directory `/var/lib/puppet-git-receiver`.
@@ -49,8 +49,8 @@ it's home directory `/var/lib/puppet-git-receiver`.
 Then you can just add the git repository as a git remote and push to
 get your manifests applied.
 
-    $ git remote add myserver puppet-git@myserver:puppet.git
-	$ git remote push myserver master
+    git remote add myserver puppet-git@myserver:puppet.git
+	git remote push myserver master
 
 ### Manual deployment
 
