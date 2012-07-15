@@ -1,3 +1,4 @@
 debian/puppet-git-receiver
 debian/puppet-git-receiver.debhelper.log
 debian/puppet-git-receiver.substvars
+debian/files
