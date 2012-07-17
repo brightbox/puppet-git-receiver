@@ -9,7 +9,7 @@ apply` using the manifest `manifests/site.pp`.
 
 It uses the path `modules/` as the puppet modules path.
 
-If only considers the master branch, ignoring all other branches. If
+Ii only considers the master branch, ignoring all other branches. If
 the validation or the apply return any errors, the update is rejected
 (i.e: the master head is not updated).
 
@@ -30,7 +30,7 @@ the validation or the apply return any errors, the update is rejected
 
 ## Deployment
 
-### Debian/Ubuntu deployment
+### Ubuntu deployment
 
 The source includes recipes to build Ubuntu packages which creates a
 user named `puppet-git`, with a pre-configured git repository named
@@ -52,6 +52,38 @@ get your manifests applied.
     git remote add myserver puppet-git@myserver:puppet.git
 	git remote push myserver master
 
+### Ubuntu cloud-init deployment
+
+If you're using an Ubuntu image with the `cloud-init` package
+installed on a cloud platform that supports EC2-style user data (like
+Amazon EC2 obviously, or [Brightbox Cloud](http://brightbox.com/), you
+can script the installation on boot like this:
+
+    #cloud-config
+    apt_sources:
+     - source: "ppa:brightbox/puppet"
+    packages:
+     - puppet-git-receiver
+    runcmd:
+    - cp -ar /home/ubuntu/.ssh /var/lib/puppet-git-receiver/
+    - chown -R puppet-git.puppet-git /var/lib/puppet-git-receiver/.ssh
+
+A version of this script is maintained as a Github gist at
+https://gist.github.com/3129203 for convenience. You can use it with
+a cloud-init `#include` statement, like this:
+
+    $ brightbox-servers create --user-data="#include https://raw.github.com/gist/3129203/puppet-git-receiver-install" img-9h5cv
+	
+    Creating a nano server with image Ubuntu Precise 12.04 LTS server (img-9h5cv) with 0.10k of user data
+    
+     id         status    type  zone   created_on  image_id   cloud_ip_ids  name
+    -----------------------------------------------------------------------------
+     srv-3te8u  creating  nano  gb1-a  2012-07-17  img-9h5cv                    
+    -----------------------------------------------------------------------------
+	
+When this boots, you can immediately push puppet manifests to it and
+have them applied. Easy peasy!
+
 ### Manual deployment
 
 If you'd prefer not to use the Ubuntu package, just install the script
@@ -60,6 +92,20 @@ script will run as has permission to run `puppet` using sudo.
 
 You obviously need git and puppet installed, but also sudo, find, tar
 and xargs.
+
+## Configuration
+
+You can disable the full validation step by setting the git config
+boolean option `puppet-receiver.skip-validation` to true on the remote
+repository:
+
+    git config --bool --add puppet-receiver.skip-validation true
+
+You can set extra arguments passed to `puppet apply` by setting the
+git config option `puppet-receiver.args` on the remote repository:
+
+    git config --add puppet-receiver.args "--noop --debug"
+
 
 ## Code
 
