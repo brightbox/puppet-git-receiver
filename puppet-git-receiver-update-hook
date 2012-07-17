@@ -8,7 +8,10 @@ BRANCH=master
 # extra options passed to puppet agent
 PUPPET_OPTIONS=
 
+full_puppet_options="$PUPPET_OPTIONS $(git config puppet-receiver.args)"
+
 MODULEPATH="modules"
+		
 
 # --- Command line
 refname="$1"
@@ -32,25 +35,50 @@ if [ "$refname" != "refs/heads/$BRANCH" ] ; then
 		exit 0
 fi
 
-echo "*** Validating puppet manifests for $refname" >&2
-DEST=`mktemp -d --suffix=.puppet-git-receiver`
+if ! which puppet >/dev/null ; then
+		echo "*** Cannot find puppet"
+		exit 1
+fi
+
+if ! which facter >/dev/null ; then
+		echo "*** Cannot find facter utility"
+		exit 1
+fi
+
+puppetver=$(facter puppetversion)
+
+if [[ $puppetver == 2.6.* || $puppetver == 0.2* ]] ; then
+		validate_command="xargs -n1 puppet --parseonly"
+else
+		validate_command="xargs puppet parser validate"
+fi
+
+DEST=$(mktemp -d --suffix=.puppet-git-receiver)
+
 if ! git archive --format=tar $newrev | (cd $DEST && tar xf -) ; then
 		echo "*** Encountered a problem extracting the incoming git tree $newrev" >&2
 		rm -rf $DEST
 		exit 1
 fi
 
-# FIXME: what if no pp files?
-if ! find $DEST -name "*.pp" | xargs puppet parser validate --mode=user --modulepath=$DEST/$MODULEPATH |& sed "s,$DEST/,,g" ; then
-		echo "*** Encountered a problem validating the puppet manifests" >&2
-		rm -rf $DEST
-		exit 1
+skip_validation=$(git config --bool puppet-receiver.skip-validation)
+
+if [ "$skip_validation" == "true" ] ; then
+		echo "*** Skipping puppet validation due to config option puppet-receiver.skip-validation" >&2
+else
+		echo "*** Validating puppet manifests for $refname" >&2
+		# FIXME: what if no pp files?
+		if ! find $DEST -name "*.pp" | $validate_command |& sed -u "s,$DEST/,,g" ; then
+				echo "*** Encountered a problem validating the puppet manifests" >&2
+				rm -rf $DEST
+				exit 1
+		fi
 fi
 
 echo "*** Applying puppet manifests" >&2
 
 # TODO: find appropriate file to apply
-sudo puppet apply $PUPPET_OPTIONS --modulepath=$DEST/$MODULEPATH  $DEST/manifests/site.pp |& sed "s,$DEST/,,g"
+sudo puppet apply $full_puppet_options --detailed-exitcodes --modulepath="$DEST/$MODULEPATH" "$DEST/manifests/site.pp" |& sed -u "s,$DEST/,,g"
 PUPRET=$?
 if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
 		echo "*** Encountered a problem applying the puppet manifest, rejecting update" >&2
