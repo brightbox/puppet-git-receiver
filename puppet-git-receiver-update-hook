@@ -1,5 +1,23 @@
 #!/bin/bash
 
+DEST=
+
+function msg { echo -e "\E[${COLOUR}m$@\E[0m" >&2 ; }
+function notice { COLOUR="0;36" msg "notice: $@" ; }
+function error { COLOUR="0;31" msg "err: $@" ; }
+
+function cleanup {
+		if [[ "$DEST" != "" ]] && [ -d "$DEST" ] ; then
+				rm -rf $DEST
+		fi
+}
+
+function cleanup_and_error {
+		cleanup
+		error $2
+		exit $1
+}
+
 set -o pipefail
 
 # git branch to consider for puppet
@@ -9,9 +27,6 @@ BRANCH=master
 PUPPET_OPTIONS=
 
 full_puppet_options="$PUPPET_OPTIONS $(git config puppet-receiver.args)"
-
-MODULEPATH="modules"
-		
 
 # --- Command line
 refname="$1"
@@ -36,13 +51,11 @@ if [ "$refname" != "refs/heads/$BRANCH" ] ; then
 fi
 
 if ! which puppet >/dev/null ; then
-		echo "*** Cannot find puppet"
-		exit 1
+		cleanup_and_error 1 "Cannot find puppet"
 fi
 
 if ! which facter >/dev/null ; then
-		echo "*** Cannot find facter utility"
-		exit 1
+		cleanup_and_error 1 "Cannot find facter utility"
 fi
 
 puppetver=$(facter puppetversion)
@@ -54,38 +67,53 @@ else
 fi
 
 DEST=$(mktemp -d --suffix=.puppet-git-receiver)
+module_path="${DEST}/modules"
 
 if ! git archive --format=tar $newrev | (cd $DEST && tar xf -) ; then
-		echo "*** Encountered a problem extracting the incoming git tree $newrev" >&2
-		rm -rf $DEST
-		exit 1
+		cleanup_and_error 1 "Encountered a problem extracting the incoming git tree $newrev"
 fi
 
 skip_validation=$(git config --bool puppet-receiver.skip-validation)
 
 if [ "$skip_validation" == "true" ] ; then
-		echo "*** Skipping puppet validation due to config option puppet-receiver.skip-validation" >&2
+		notice "Skipping puppet validation due to config option puppet-receiver.skip-validation"
 else
-		echo "*** Validating puppet manifests for $refname" >&2
+		notice "Validating puppet manifests for $refname"
 		# FIXME: what if no pp files?
 		if ! find $DEST -name "*.pp" | $validate_command |& sed -u "s,$DEST/,,g" ; then
-				echo "*** Encountered a problem validating the puppet manifests" >&2
-				rm -rf $DEST
-				exit 1
+				cleanup_and_error 1 "Encountered a problem validating the puppet manifests"
 		fi
 fi
 
-echo "*** Applying puppet manifests" >&2
+pf_file="${DEST}/.puppetforge-modules"
+pf_path="${DEST}/puppetforge-modules"
 
-# TODO: find appropriate file to apply
-sudo puppet apply $full_puppet_options --detailed-exitcodes --modulepath="$DEST/$MODULEPATH" "$DEST/manifests/site.pp" |& sed -u "s,$DEST/,,g"
-PUPRET=$?
-if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
-		echo "*** Encountered a problem applying the puppet manifest, rejecting update" >&2
-		rm -rf $DEST
-		exit 1
+if [ -e $pf_file ] ; then
+		# FIXME: Check puppet version
+		notice "Installing puppet forge modules"
+		mkdir -p $pf_path || cleanup_and_error 1 "Couldn't create puppet forge modules directory: $pf_path"
+		while read -r module_name module_version ; do
+				if [[ "$module_name" != "" && ! "$module_name" =~ ^# ]] ; then
+						if [[ "$module_version" != "" ]] ; then
+								pf_version_arg="--version $module_version"
+						fi
+						puppet module install --force --target-dir $pf_path $pf_version_arg $module_name |& sed -u "s,$pf_path,,g"
+						if [ $? -ne 0 ] ; then
+								cleanup_and_error 1 "Error installing puppet forge module $module_name $module_version"
+						fi
+				fi
+		done < $pf_file
+		module_path="$module_path:$pf_path"
 fi
 
-echo "*** Puppet manifests applied successfully" >&2
-rm -rf $DEST
-exit 0
+notice "Applying puppet manifests"
+
+# TODO: find appropriate file to apply
+sudo puppet apply $full_puppet_options --detailed-exitcodes --modulepath=${module_path} "$DEST/manifests/site.pp" |& sed -u "s,$DEST/,,g"
+PUPRET=$?
+if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
+		cleanup_and_error 1 "Encountered a problem applying the puppet manifest, rejecting update"
+fi
+
+notice "Puppet manifests applied successfully"
+cleanup

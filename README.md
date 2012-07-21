@@ -7,9 +7,10 @@ When installed as a git update hook, it validates any file with the
 suffix .pp. If no validation errors are detected, then it runs `puppet
 apply` using the manifest `manifests/site.pp`.
 
-It uses the path `modules/` as the puppet modules path.
+It uses the path `modules/` in your repository as the puppet modules
+path.
 
-Ii only considers the master branch, ignoring all other branches. If
+It only considers the master branch, ignoring all other branches. If
 the validation or the apply return any errors, the update is rejected
 (i.e: the master head is not updated).
 
@@ -34,7 +35,7 @@ the validation or the apply return any errors, the update is rejected
 
 The source includes recipes to build Ubuntu packages which creates a
 user named `puppet-git`, with a pre-configured git repository named
-`puppet.git` in it's home directory (and appropriate sudo privileges).
+`puppet.git` in its home directory (and appropriate sudo privileges).
 
 Pre-built packages for Ubuntu precise are available in the
 [Brightbox launchpad ppa](https://launchpad.net/~brightbox/+archive/puppet).
@@ -44,7 +45,7 @@ Pre-built packages for Ubuntu precise are available in the
     sudo apt-get install puppet-git-receiver
 
 Then set a password for the `puppet-git` user, or add your ssh keys to
-it's home directory `/var/lib/puppet-git-receiver`.
+its home directory `/var/lib/puppet-git-receiver`.
 
 Then you can just add the git repository as a git remote and push to
 get your manifests applied.
@@ -107,9 +108,33 @@ git config option `puppet-receiver.args` on the remote repository:
     git config --add puppet-receiver.args "--noop --debug"
 
 
+## Puppet forge integration
+
+puppet-git-receiver can download and install modules hosted on
+[Puppet Forge](http://forge.puppetlabs.com/) prior to applying your
+manifests.
+
+Create a file in the root of your repository named
+`.puppetforge-modules` and list each module you want installed, one
+per line. You can optionally specify the exact module version you want
+installed, putting the version number after the module name separated
+by a space, otherwise the latest version is installed. Lines starting
+with a `#` character and empty lines are ignored. Example:
+
+    brightbox/apt
+    brightbox/apache 1.0.0
+	brightbox/nagios
+
+The modules are installed on the server into a directory created in
+the root named `puppetforge-modules` which is added to the puppet
+`modulespath`. Your repository's own `modules/` directory takes
+precedence.
+
+Puppet version 2.7.12 is required for installing forge modules.
+
 ## Code
 
 The code is licensed under the terms of the GPLv3 and is available on
-github at https://github.com/brightbox/puppet-git-receiver
+Github at https://github.com/brightbox/puppet-git-receiver
 
 (c) Copyright 2012 John Leach <john@brightbox.co.uk>
