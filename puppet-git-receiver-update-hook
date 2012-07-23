@@ -1,7 +1,5 @@
 #!/bin/bash
 
-DEST=
-
 function msg { echo -e "\E[${COLOUR}m$@\E[0m" >&2 ; }
 function notice { COLOUR="0;36" msg "notice: $@" ; }
 function error { COLOUR="0;31" msg "err: $@" ; }
@@ -19,6 +17,18 @@ function cleanup_and_error {
 }
 
 set -o pipefail
+
+# Act as an external node classifier if necessary
+if env | grep "PUPPET_ENC_FILE" >/dev/null ; then
+		if [ -e "$PUPPET_ENC_FILE" ] ; then
+				cat $PUPPET_ENC_FILE
+		else
+				echo -e "classes:\n"
+		fi
+		exit 0
+fi
+
+DEST=
 
 # git branch to consider for puppet
 BRANCH=master
@@ -61,9 +71,9 @@ fi
 puppetver=$(facter puppetversion)
 
 if [[ $puppetver == 2.6.* || $puppetver == 0.2* ]] ; then
-		validate_command="xargs -n1 puppet --parseonly"
+		validate_command="xargs --no-run-if-empty -n1 puppet --parseonly"
 else
-		validate_command="xargs puppet parser validate"
+		validate_command="xargs --no-run-if-empty puppet parser validate"
 fi
 
 DEST=$(mktemp -d --suffix=.puppet-git-receiver)
@@ -78,8 +88,7 @@ skip_validation=$(git config --bool puppet-receiver.skip-validation)
 if [ "$skip_validation" == "true" ] ; then
 		notice "Skipping puppet validation due to config option puppet-receiver.skip-validation"
 else
-		notice "Validating puppet manifests for $refname"
-		# FIXME: what if no pp files?
+		notice "Validating puppet manifests for $refname"		
 		if ! find $DEST -name "*.pp" | $validate_command |& sed -u "s,$DEST/,,g" ; then
 				cleanup_and_error 1 "Encountered a problem validating the puppet manifests"
 		fi
@@ -106,14 +115,50 @@ if [ -e $pf_file ] ; then
 		module_path="$module_path:$pf_path"
 fi
 
-notice "Applying puppet manifests"
 
-# TODO: find appropriate file to apply
-sudo puppet apply $full_puppet_options --detailed-exitcodes --modulepath=${module_path} "$DEST/manifests/site.pp" |& sed -u "s,$DEST/,,g"
+manifest_file="${DEST}/manifests/site.pp"
+
+fqdn=`facter fqdn`
+enc_file="${DEST}/manifests/nodes/${fqdn}.yml"
+
+if [ ! -e $enc_file ] ; then
+		enc_file="${DEST}/manifests/site.yml"
+fi
+
+if [ ! -e $enc_file ] ; then
+		enc_file=""
+fi
+
+if [ ! -e $manifest_file -a ! -e "$enc_file" ] ; then
+		notice "No puppet manifest detected"
+		cleanup
+		exit 0
+fi
+
+# Make a blank manifest if necessary
+if [ ! -e $manifest_file ] ; then
+		touch $manifest_file
+fi
+
+if [ -e "$enc_file" ] ; then
+		notice "Using external node classification file ${enc_file//$DEST\/}"
+fi
+
+confdir="${DEST}/puppet-confdir"
+mkdir -p $confdir/ssl
+
+cat <<EOF > "${confdir}/puppet.conf"
+[main]
+  node_terminus = exec
+  external_nodes = `pwd`/$0
+EOF
+
+notice "Applying puppet manifests"
+sudo PUPPET_ENC_FILE=$enc_file puppet apply --confdir=${confdir} $full_puppet_options --detailed-exitcodes --modulepath=${module_path} $manifest_file |& sed -u "s,$DEST/,,g"
+
 PUPRET=$?
 if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
 		cleanup_and_error 1 "Encountered a problem applying the puppet manifest, rejecting update"
 fi
-
 notice "Puppet manifests applied successfully"
 cleanup

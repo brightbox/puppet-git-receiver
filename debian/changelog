@@ -1,3 +1,9 @@
+puppet-git-receiver (1.2-1) precise; urgency=low
+
+  * Support for classifying nodes using yaml files
+
+ -- John Leach <john@brightbox.co.uk>  Mon, 23 Jul 2012 16:17:08 +0100
+
 puppet-git-receiver (1.1-1) precise; urgency=low
 
   * New upstream release

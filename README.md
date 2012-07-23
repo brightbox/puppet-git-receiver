@@ -89,10 +89,14 @@ have them applied. Easy peasy!
 
 If you'd prefer not to use the Ubuntu package, just install the script
 in your git repository named `.git/hooks/update`. Ensure the user the
-script will run as has permission to run `puppet` using sudo.
+script will run as has permission to run `puppet` using sudo with
+environment variables. Something like this in `sudoers` should do the
+trick:
 
-You obviously need git and puppet installed, but also sudo, find, tar
-and xargs.
+    puppet-git	ALL=NOPASSWD: SETENV:/usr/bin/puppet
+
+You obviously need git and puppet installed, but also bash, sudo,
+find, tar and xargs.
 
 ## Configuration
 
@@ -131,6 +135,33 @@ the root named `puppetforge-modules` which is added to the puppet
 precedence.
 
 Puppet version 2.7.12 is required for installing forge modules.
+
+## Yaml-based node classification
+
+You can classify nodes using yaml files placed in the `manifests/`
+directory.
+
+`manifests/site.yml` is the default for all nodes, but you can create
+files in `manifests/nodes/` with the fqdn of the node you want to
+classify and that will be used instead (e.g:
+`manifests/nodes/srv-abcde.gb1.brightbox.com.yml`).
+
+The file needs to be formatted as per the puppet
+[external node classification output format](http://docs.puppetlabs.com/guides/external_nodes.html#enc-output-format).
+
+For example:
+
+    classes:
+      "apt":
+      "apache":
+      "apache::php":
+      "apache::passenger":
+        instances_per_app: 8
+      "rsyslog":
+        remote_servers:
+          - "10.0.0.1"
+          - "10.0.0.2"
+
 
 ## Code
 
