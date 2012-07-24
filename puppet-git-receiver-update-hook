@@ -154,7 +154,7 @@ cat <<EOF > "${confdir}/puppet.conf"
 EOF
 
 notice "Applying puppet manifests"
-sudo PUPPET_ENC_FILE=$enc_file puppet apply --confdir=${confdir} $full_puppet_options --detailed-exitcodes --modulepath=${module_path} $manifest_file |& sed -u "s,$DEST/,,g"
+sudo -H PUPPET_ENC_FILE=$enc_file puppet apply --confdir=${confdir} $full_puppet_options --detailed-exitcodes --modulepath=${module_path} $manifest_file |& sed -u "s,$DEST/,,g"
 
 PUPRET=$?
 if ! [ $PUPRET -eq 0 -o $PUPRET -eq 2 ] ; then
