@@ -151,6 +151,7 @@ cat <<EOF > "${confdir}/puppet.conf"
 [main]
   node_terminus = exec
   external_nodes = `pwd`/$0
+  templatedir=${DEST}/templates
 EOF
 
 notice "Applying puppet manifests"
