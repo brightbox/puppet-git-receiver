@@ -60,6 +60,8 @@ if [ "$refname" != "refs/heads/$BRANCH" ] ; then
 		exit 0
 fi
 
+notice "puppet-git-receiver running on `hostname -f`"
+
 if ! which puppet >/dev/null ; then
 		cleanup_and_error 1 "Cannot find puppet"
 fi
@@ -153,6 +155,23 @@ cat <<EOF > "${confdir}/puppet.conf"
   external_nodes = `pwd`/$0
   templatedir=${DEST}/templates
 EOF
+
+if [ -e "${DEST}/hiera" ] ; then
+		cat <<EOF > "${confdir}/hiera.yaml"
+---
+:backends: - yaml
+           - puppet
+:hierarchy: - %{hostname}
+            - %{fqdn}
+            - %{domain}
+            - %{ec2_placement_availability_zone}
+            - default
+:yaml:
+        :datadir: ${DEST}/hiera
+:puppet:
+    :datasource: data
+EOF
+fi
 
 notice "Applying puppet manifests"
 sudo -H PUPPET_ENC_FILE=$enc_file puppet apply --confdir=${confdir} $full_puppet_options --detailed-exitcodes --modulepath=${module_path} $manifest_file |& sed -u "s,$DEST/,,g"
