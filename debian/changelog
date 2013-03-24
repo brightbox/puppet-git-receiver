@@ -1,3 +1,9 @@
+puppet-git-receiver (1.4.1-1) precise; urgency=low
+
+  * Fix random hang bug
+
+ -- John Leach <john@brightbox.co.uk>  Sun, 24 Mar 2013 15:41:18 +0000
+
 puppet-git-receiver (1.4-1) precise; urgency=low
 
   * Support for hiera
