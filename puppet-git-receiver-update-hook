@@ -19,7 +19,8 @@ function cleanup_and_error {
 set -o pipefail
 
 # Act as an external node classifier if necessary
-if env | grep "PUPPET_ENC_FILE" >/dev/null ; then
+if env | grep --quiet "PUPPET_ENC_FILE" ; then
+		sleep 1 # Without this sleep, puppet randomly hangs
 		if [ -e "$PUPPET_ENC_FILE" ] ; then
 				cat $PUPPET_ENC_FILE
 		else
