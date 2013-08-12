@@ -118,6 +118,15 @@ if [ -e $pf_file ] ; then
 		module_path="$module_path:$pf_path"
 fi
 
+if [ -e "${DEST}/Puppetfile" ] ; then
+	if ! which librarian-puppet >/dev/null ; then
+		error 'Puppetfile found in repo but librarian-puppet not installed.'
+	else
+		notice "Installing librarian-puppet modules"
+		lp_options=$(git config puppet-receiver.librarian-puppet-args)
+		(cd $DEST; librarian-puppet install $lp_options)
+	fi
+fi
 
 manifest_file="${DEST}/manifests/site.pp"
 
