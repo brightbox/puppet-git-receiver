@@ -136,6 +136,19 @@ precedence.
 
 Puppet version 2.7.12 is required for installing forge modules.
 
+## Librarian-puppet integration
+
+puppet-git-receiver can alternatively download and install modules using
+librarian-puppet. If a `Puppetfile` is found in your repository and
+librarian-puppet is installed the modules will be fetched before applying your
+manifests.
+
+Options to librarian-puppet can be supplied by setting the
+`puppet-receiver.librarian-puppet-args` git config option on the remote
+repository:
+
+    git config --add puppet-receiver.librarian-puppet-args "--verbose"
+
 ## Yaml-based node classification
 
 You can classify nodes using yaml files placed in the `manifests/`
