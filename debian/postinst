@@ -42,6 +42,9 @@ case "$1" in
 				chown -R $PGRUSER.admin $REPOPATH
 
 				ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
+
+				ln -s $REPOPATH /var/lib/puppet-git-receiver.git
+
     ;;
 
     abort-upgrade|abort-remove|abort-deconfigure)
