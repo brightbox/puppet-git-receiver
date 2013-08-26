@@ -30,14 +30,16 @@ case "$1" in
             --disabled-password \
 						--shell /usr/bin/git-shell \
             --group "$PGRUSER"
+				umask 0007
 				chmod 750 $PGRHOME
-				chown $PGRUSER.$PGRUSER $PGRHOME
+				chown $PGRUSER.admin $PGRHOME
 				mkdir -p $REPOPATH
+				chmod 2770 $REPOPATH
 				HOOKSPATH=$REPOPATH/hooks/
 				if [ ! -d "$HOOKSPATH" ] ; then
 						GIT_DIR=$REPOPATH git init --bare
 				fi
-				chown -R $PGRUSER.$PGRUSER $REPOPATH
+				chown -R $PGRUSER.admin $REPOPATH
 
 				ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
     ;;
