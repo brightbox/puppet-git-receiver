@@ -14,7 +14,7 @@ It only considers the master branch, ignoring all other branches. If
 the validation or the apply return any errors, the update is rejected
 (i.e: the master head is not updated).
 
-    git push srv-30qvg
+    git push srv-30qvg.gb1.brightbox.com
     
     Counting objects: 7, done.
     Delta compression using up to 2 threads.
@@ -50,7 +50,19 @@ its home directory `/var/lib/puppet-git-receiver`.
 Then you can just add the git repository as a git remote and push to
 get your manifests applied.
 
-    git remote add myserver puppet-git@myserver:puppet.git
+    git remote add myserver puppet-git@myserver.example.com:puppet.git
+	git remote push myserver master
+
+Alternatively, you can just use any user in the `admin` group with
+full sudo privileges to access the repo too:
+
+	git remote add myserver ubuntu@myserver.example.com:/var/lib/puppet-git-receiver/puppet.git
+	git remote push myserver master
+
+And for (slight) convenience, there is a symlink to the repository at
+`/var/lib/puppet-git-receiver.git`:
+
+	git remote add myserver ubuntu@myserver.example.com:/var/lib/puppet-git-receiver.git
 	git remote push myserver master
 
 ### Ubuntu cloud-init deployment
