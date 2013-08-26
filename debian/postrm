@@ -1,0 +1,13 @@
+#!/bin/sh
+
+set -e
+
+PGRHOME=/var/lib/puppet-git-receiver
+PGRUSER=puppet-git
+REPOPATH="$PGRHOME/puppet.git"
+
+if [ "$1" = "purge" ] ; then
+		userdel $PGRUSER || true
+		rm -rf $PGRHOME || true
+		rm /var/lib/puppet-git-receiver.git || true		
+fi
