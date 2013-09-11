@@ -7,6 +7,8 @@ set -e
 
 PGRHOME=/var/lib/puppet-git-receiver
 PGRUSER=puppet-git
+# group 'admin' no longer exists as such on precise
+PGRGROUP=$PGRUSER
 REPOPATH="$PGRHOME/puppet.git"
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -39,7 +41,7 @@ case "$1" in
 				if [ ! -d "$HOOKSPATH" ] ; then
 						GIT_DIR=$REPOPATH git init --bare
 				fi
-				chown -R $PGRUSER.admin $REPOPATH
+				chown -R $PGRUSER.$PGRGROUP $REPOPATH
 
 				ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
 
