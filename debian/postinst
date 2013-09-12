@@ -7,8 +7,8 @@ set -e
 
 PGRHOME=/var/lib/puppet-git-receiver
 PGRUSER=puppet-git
-# group 'admin' no longer exists as such on precise
-PGRGROUP=$PGRUSER
+# see: # http://askubuntu.com/questions/43317/what-is-the-difference-between-the-sudo-and-admin-group
+PGRGROUP=$(awk -F: '$1 == "sudo" { print $1 }' /etc/group || echo admin)
 REPOPATH="$PGRHOME/puppet.git"
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
@@ -35,7 +35,7 @@ case "$1" in
             --group "$PGRUSER"
         umask 0007
         chmod 750 $PGRHOME
-        chown $PGRUSER.admin $PGRHOME
+        chown $PGRUSER.$PGRGROUP $PGRHOME
         mkdir -p $REPOPATH
         chmod 2770 $REPOPATH
         HOOKSPATH=$REPOPATH/hooks/
