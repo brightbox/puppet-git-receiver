@@ -1,3 +1,10 @@
+puppet-git-receiver (1.5.0-2) precise; urgency=low
+
+  * admin group is named sudo on recent ubuntus. Support both.
+  * Depend on either git or git-core
+
+ -- John Leach <john@brightbox.co.uk>  Thu, 12 Sep 2013 10:54:15 +0100
+
 puppet-git-receiver (1.5.0-1) precise; urgency=low
 
   * Support for librarian-puppet
