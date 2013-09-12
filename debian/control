@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/brightbox/puppet-git-receiver
 Package: puppet-git-receiver
 Architecture: all
 Depends: ${misc:Depends}, coreutils, bash, puppet (>= 2.7), findutils,
- tar, git, sudo
+ tar, git|git-core, sudo
 Description: Provides a git repo that runs puppet on post-receive
  A git post-receive hook script that handles extracting a puppet
  manifest from a git repository and applying it with puppet.
