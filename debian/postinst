@@ -25,27 +25,28 @@ REPOPATH="$PGRHOME/puppet.git"
 
 case "$1" in
     configure)
-				adduser --system \
+        adduser \
+            --system \
             --quiet \
             --home "$PGRHOME" \
             --no-create-home \
             --disabled-password \
-						--shell /usr/bin/git-shell \
+            --shell /usr/bin/git-shell \
             --group "$PGRUSER"
-				umask 0007
-				chmod 750 $PGRHOME
-				chown $PGRUSER.admin $PGRHOME
-				mkdir -p $REPOPATH
-				chmod 2770 $REPOPATH
-				HOOKSPATH=$REPOPATH/hooks/
-				if [ ! -d "$HOOKSPATH" ] ; then
-						GIT_DIR=$REPOPATH git init --bare
-				fi
-				chown -R $PGRUSER.$PGRGROUP $REPOPATH
+        umask 0007
+        chmod 750 $PGRHOME
+        chown $PGRUSER.admin $PGRHOME
+        mkdir -p $REPOPATH
+        chmod 2770 $REPOPATH
+        HOOKSPATH=$REPOPATH/hooks/
+        if [ ! -d "$HOOKSPATH" ] ; then
+            GIT_DIR=$REPOPATH git init --bare
+        fi
+        chown -R $PGRUSER.$PGRGROUP $REPOPATH
 
-				ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
+        ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
 
-				ln -s $REPOPATH /var/lib/puppet-git-receiver.git
+        ln -s $REPOPATH /var/lib/puppet-git-receiver.git
 
     ;;
 
