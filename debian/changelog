@@ -1,4 +1,13 @@
-puppet-git-receiver (1.5.0-1) precise; urgency=low
+puppet-git-receiver (1.5.1) saucy; urgency=low
+
+  * postinst: Use sudo group if it exists else admin group
+  * Depend upon ruby-hiera package
+  * Depend upon adduser package
+  * Ensure package is lintian clean
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 28 Nov 2013 11:43:44 +0000
+
+puppet-git-receiver (1.5.0) precise; urgency=low
 
   * Support for librarian-puppet
   * Ensure the default git repo is accessible by users in the admin group
@@ -7,39 +16,39 @@ puppet-git-receiver (1.5.0-1) precise; urgency=low
 
  -- John Leach <john@brightbox.co.uk>  Sat, 24 Aug 2013 20:25:17 +0100
 
-puppet-git-receiver (1.4.1-1) precise; urgency=low
+puppet-git-receiver (1.4.1) precise; urgency=low
 
   * Fix random hang bug
 
  -- John Leach <john@brightbox.co.uk>  Sun, 24 Mar 2013 15:41:18 +0000
 
-puppet-git-receiver (1.4-1) precise; urgency=low
+puppet-git-receiver (1.4) precise; urgency=low
 
   * Support for hiera
   * Show hostname before applying manifests
 
  -- John Leach <john@brightbox.co.uk>  Fri, 14 Sep 2012 23:45:51 +0100
 
-puppet-git-receiver (1.3-1) precise; urgency=low
+puppet-git-receiver (1.3) precise; urgency=low
 
   * Set templatedir for using non-module templates
   * Run puppet with HOME set to root
 
  -- John Leach <john@brightbox.co.uk>  Wed, 08 Aug 2012 22:52:21 +0100
 
-puppet-git-receiver (1.2-1) precise; urgency=low
+puppet-git-receiver (1.2) precise; urgency=low
 
   * Support for classifying nodes using yaml files
 
  -- John Leach <john@brightbox.co.uk>  Mon, 23 Jul 2012 16:17:08 +0100
 
-puppet-git-receiver (1.1-1) precise; urgency=low
+puppet-git-receiver (1.1) precise; urgency=low
 
   * New upstream release
 
  -- John Leach <john@brightbox.co.uk>  Tue, 17 Jul 2012 21:45:35 +0100
 
-puppet-git-receiver (1.0-2) precise; urgency=low
+puppet-git-receiver (1.0) precise; urgency=low
 
   * Initial release
 

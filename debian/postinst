@@ -8,7 +8,10 @@ set -e
 PGRHOME=/var/lib/puppet-git-receiver
 PGRUSER=puppet-git
 # see: # http://askubuntu.com/questions/43317/what-is-the-difference-between-the-sudo-and-admin-group
-PGRGROUP=$(awk -F: '$1 == "sudo" { print $1 }' /etc/group || echo admin)
+PGRGROUP=$(awk -F: '
+  BEGIN { out = "admin" }
+  $4 && $1 == "sudo" { out = $1 }
+  END {print out }' /etc/group)
 REPOPATH="$PGRHOME/puppet.git"
 # summary of how this script can be called:
 #        * <postinst> `configure' <most-recently-configured-version>
