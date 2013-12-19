@@ -1,0 +1,25 @@
+#!/bin/sh
+set -e
+
+fail() {
+  echo "$@" >&2
+  exit 1
+}
+
+retrieve_puppet_recipes() {
+  local tempdir=$(mktemp -d --suffix=.puppet-git-retriever)
+  local puppet_service_files=$1
+  trap "rm -rf ${tempdir}" EXIT INT
+  git clone --mirror "${puppet_service_files}" ${tempdir}
+  (
+    cd ${tempdir}
+    git push --mirror /var/lib/puppet-git-receiver.git
+  )
+  rm -rf ${tempdir}
+  trap - EXIT
+}
+
+
+[ "$#" -eq 1 ] ||
+  fail "Usage: $(basename $0) <git url>"
+retrieve_puppet_recipes "$@"
