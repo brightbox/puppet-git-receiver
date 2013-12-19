@@ -1,0 +1,5 @@
+#!/bin/sh
+export GIT_DIR=/var/lib/puppet-git-receiver.git
+cd ${GIT_DIR}
+./hooks/update \
+  refs/heads/master dummy HEAD
