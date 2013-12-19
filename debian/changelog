@@ -1,3 +1,10 @@
+puppet-git-receiver (1.5.2) saucy; urgency=low
+
+  * puppet-git-retriever: Pull the git archive from a source and apply
+  * puppet-git-reapply: Reapply the existing puppet archive
+
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 19 Dec 2013 17:45:11 +0000
+
 puppet-git-receiver (1.5.1) saucy; urgency=low
 
   * postinst: Use sudo group if it exists else admin group
