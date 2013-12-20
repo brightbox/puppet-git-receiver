@@ -1,3 +1,9 @@
+puppet-git-receiver (1.5.3) UNRELEASED; urgency=low
+
+  * postinst: Make git dir symlink idempotent so upgrades work
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 20 Dec 2013 11:28:49 +0000
+
 puppet-git-receiver (1.5.2) saucy; urgency=low
 
   * puppet-git-retriever: Pull the git archive from a source and apply
