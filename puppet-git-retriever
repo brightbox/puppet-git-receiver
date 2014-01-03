@@ -14,6 +14,7 @@ retrieve_puppet_recipes() {
   (
     cd ${tempdir}
     git push --mirror /var/lib/puppet-git-receiver.git
+    git remote add --mirror=fetch origin "${puppet_service_files}"
   )
   rm -rf ${tempdir}
   trap - EXIT
