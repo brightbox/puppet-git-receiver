@@ -11,3 +11,7 @@ if [ "$1" = "purge" ] ; then
 		rm -rf $PGRHOME || true
 		rm /var/lib/puppet-git-receiver.git || true		
 fi
+
+#DEBHELPER#
+
+exit 0

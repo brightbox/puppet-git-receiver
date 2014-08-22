@@ -3,15 +3,15 @@ Section: admin
 Priority: optional
 Maintainer: John Leach <john@brightbox.co.uk>
 Build-Depends: debhelper (>= 7.0.50~)
-Standards-Version: 3.9.2
+Standards-Version: 3.9.4
 Homepage: https://github.com/brightbox/puppet-git-receiver
 Vcs-Git: git://github.com/brightbox/puppet-git-receiver.git
 Vcs-Browser: https://github.com/brightbox/puppet-git-receiver
 
 Package: puppet-git-receiver
 Architecture: all
-Depends: ${misc:Depends}, coreutils, bash, puppet (>= 2.7), findutils,
- tar, git|git-core, sudo
+Depends: ${misc:Depends}, puppet (>= 2.7), git|git-core, sudo,
+  adduser, ruby-hiera
 Description: Provides a git repo that runs puppet on post-receive
  A git post-receive hook script that handles extracting a puppet
  manifest from a git repository and applying it with puppet.
