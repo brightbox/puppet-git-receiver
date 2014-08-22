@@ -6,3 +6,5 @@
 override_dh_install:
 	install -m440 -D debian/puppet-git-receiver.sudoers debian/puppet-git-receiver/etc/sudoers.d/puppet-git-receive
 	install -m755 -D puppet-git-receiver-update-hook  debian/puppet-git-receiver/usr/lib/puppet-git/puppet-git-receiver-update-hook
+	install -m755 -D puppet-git-retriever debian/puppet-git-receiver/usr/sbin/puppet-git-retriever
+	install -m755 -D puppet-git-reapply debian/puppet-git-receiver/usr/sbin/puppet-git-reapply

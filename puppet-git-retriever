@@ -1,0 +1,33 @@
+#!/bin/sh
+set -e
+
+fail() {
+  echo "$@" >&2
+  exit 1
+}
+
+retrieve_puppet_recipes() {
+  local tempdir=$(mktemp -d --suffix=.puppet-git-retriever)
+  local puppet_service_files=$1
+  local targetdir=/var/lib/puppet-git-receiver.git
+  trap "rm -rf ${tempdir}" EXIT INT
+  git clone --mirror "${puppet_service_files}" ${tempdir}
+  (
+    cd "${tempdir}"
+    git push --mirror "${targetdir}"
+    cd "${targetdir}"
+    if grep -q origin config
+    then
+        git remote set-url origin "${puppet_service_files}"
+    else
+        git remote add --mirror=fetch origin "${puppet_service_files}"
+    fi
+  )
+  rm -rf ${tempdir}
+  trap - EXIT
+}
+
+
+[ "$#" -eq 1 ] ||
+  fail "Usage: $(basename $0) <git url>"
+retrieve_puppet_recipes "$@"
