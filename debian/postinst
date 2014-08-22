@@ -49,7 +49,7 @@ case "$1" in
 
         ln -fns /usr/lib/puppet-git/puppet-git-receiver-update-hook $HOOKSPATH/update
 
-        ln -s $REPOPATH /var/lib/puppet-git-receiver.git
+        ln -snf $REPOPATH /var/lib/puppet-git-receiver.git
 
     ;;
 
