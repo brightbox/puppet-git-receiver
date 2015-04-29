@@ -1,4 +1,10 @@
-puppet-git-receiver (1.5.3) UNRELEASED; urgency=low
+puppet-git-receiver (1.5.4) trusty; urgency=low
+
+  * postinst: Fix installation on servers with an empty sudo group
+
+ -- John Leach <john@brightbox.co.uk>  Wed, 29 Apr 2015 13:43:34 +0100
+
+puppet-git-receiver (1.5.3) trusty; urgency=low
 
   * postinst: Make git dir symlink idempotent so upgrades work
   * puppet-git-retriever: Add remote to puppet.git repo
