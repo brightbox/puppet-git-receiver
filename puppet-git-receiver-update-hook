@@ -6,7 +6,7 @@ function error { COLOUR="0;31" msg "err: $@" ; }
 
 function cleanup {
 		if [[ "$DEST" != "" ]] && [ -d "$DEST" ] ; then
-				rm -rf $DEST
+				rm -rf $DEST || true
 		fi
 }
 
