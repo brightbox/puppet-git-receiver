@@ -1,3 +1,9 @@
+puppet-git-receiver (1.5.4) UNRELEASED; urgency=medium
+
+  * control: Install hiera on xenial
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 08 Jul 2016 14:16:57 +0100
+
 puppet-git-receiver (1.5.4) trusty; urgency=low
 
   * postinst: Fix installation on servers with an empty sudo group
