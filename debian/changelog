@@ -1,8 +1,10 @@
-puppet-git-receiver (1.5.5) UNRELEASED; urgency=medium
+puppet-git-receiver (1.5.5) xenial; urgency=medium
 
   * control: Install hiera on xenial
+  * update-hook: add configuration file
+  * update README
 
- -- Neil Wilson <neil@aldur.co.uk>  Fri, 08 Jul 2016 14:16:57 +0100
+ -- Neil Wilson <neil@aldur.co.uk>  Thu, 21 Sep 2017 15:35:25 +0100
 
 puppet-git-receiver (1.5.4) trusty; urgency=low
 

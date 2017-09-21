@@ -10,12 +10,12 @@ apply` using the manifest `manifests/site.pp`.
 It uses the path `modules/` in your repository as the puppet modules
 path.
 
-It only considers the master branch, ignoring all other branches. If
-the validation or the apply return any errors, the update is rejected
-(i.e: the master head is not updated).
+By default it considers the master branch and ignores all others (See
+below to change the target branch). If the validation or the apply return
+any errors, the update is rejected (i.e: the master head is not updated).
 
     git push srv-30qvg.gb1.brightbox.com
-    
+
     Counting objects: 7, done.
     Delta compression using up to 2 threads.
     Compressing objects: 100% (2/2), done.
@@ -88,10 +88,10 @@ a cloud-init `#include` statement, like this:
     $ brightbox-servers create --user-data="#include https://raw.github.com/gist/3129203/puppet-git-receiver-install" img-9h5cv
 	
     Creating a nano server with image Ubuntu Precise 12.04 LTS server (img-9h5cv) with 0.10k of user data
-    
+
      id         status    type  zone   created_on  image_id   cloud_ip_ids  name
     -----------------------------------------------------------------------------
-     srv-3te8u  creating  nano  gb1-a  2012-07-17  img-9h5cv                    
+     srv-3te8u  creating  nano  gb1-a  2012-07-17  img-9h5cv
     -----------------------------------------------------------------------------
 	
 When this boots, you can immediately push puppet manifests to it and
@@ -123,6 +123,11 @@ git config option `puppet-receiver.args` on the remote repository:
 
     git config --add puppet-receiver.args "--noop --debug"
 
+You can change the default branch that puppet-git-receiver uses by
+creating the file `/etc/puppet-git-receiver.conf` and setting the
+BRANCH variable
+
+    BRANCH=new-version
 
 ## Puppet forge integration
 

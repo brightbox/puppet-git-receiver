@@ -18,6 +18,9 @@ function cleanup_and_error {
 
 set -o pipefail
 
+# shell variable config file
+config_file=/etc/puppet-git-receiver.conf
+
 # Act as an external node classifier if necessary
 if env | grep --quiet "PUPPET_ENC_FILE" ; then
 		sleep 1 # Without this sleep, puppet randomly hangs
@@ -36,6 +39,9 @@ BRANCH=master
 
 # extra options passed to puppet agent
 PUPPET_OPTIONS=
+
+# Override variables with those in the config file, if it exists
+test -f "${config_file}" && source "${config_file}"
 
 full_puppet_options="$PUPPET_OPTIONS $(git config puppet-receiver.args)"
 
