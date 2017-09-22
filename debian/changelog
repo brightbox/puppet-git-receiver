@@ -1,3 +1,9 @@
+puppet-git-receiver (1.5.6) UNRELEASED; urgency=medium
+
+  * puppet-git-reapply: add configuration file
+
+ -- Neil Wilson <neil@aldur.co.uk>  Fri, 22 Sep 2017 17:03:12 +0100
+
 puppet-git-receiver (1.5.5) xenial; urgency=medium
 
   * control: Install hiera on xenial

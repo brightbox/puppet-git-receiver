@@ -1,10 +1,15 @@
 #!/bin/sh
 set -e
 export GIT_DIR=/var/lib/puppet-git-receiver.git
+# shell variable config file
+config_file=/etc/puppet-git-receiver.conf
+BRANCH=master
+# Override variables with those in the config file, if it exists
+test -f "${config_file}" && . "${config_file}"
 cd ${GIT_DIR}
 if [ "$1" = '--update' ]
 then
   git fetch -v
 fi
 ./hooks/update \
-  refs/heads/master dummy HEAD
+  refs/heads/${BRANCH} dummy ${BRANCH}
