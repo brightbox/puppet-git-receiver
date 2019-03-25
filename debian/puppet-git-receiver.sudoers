@@ -1,2 +1,0 @@
-puppet-git	ALL=NOPASSWD: SETENV:/usr/bin/puppet
-
