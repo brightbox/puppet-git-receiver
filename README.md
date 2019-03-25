@@ -37,7 +37,7 @@ The source includes recipes to build Ubuntu packages which creates a
 user named `puppet-git`, with a pre-configured git repository named
 `puppet.git` in its home directory (and appropriate sudo privileges).
 
-Pre-built packages for Ubuntu precise are available in the
+Pre-built packages for Ubuntu are available in the
 [Brightbox launchpad ppa](https://launchpad.net/~brightbox/+archive/puppet).
 
     sudo apt-add-repository ppa:brightbox/puppet

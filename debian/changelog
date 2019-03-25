@@ -1,4 +1,4 @@
-puppet-git-receiver (1.5.6) UNRELEASED; urgency=medium
+puppet-git-receiver (1.5.6) xenial; urgency=medium
 
   * puppet-git-reapply: add configuration file
 
